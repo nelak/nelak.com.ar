@@ -1,14 +1,18 @@
+﻿@helper PostDate(DateTime rawDate)
+{
+    <time datetime="@rawDate.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss")" itemprop="datePublished">@rawDate.ToString("MMM d, yyyy")</time>
+}
 <!DOCTYPE html>
 
 <html>
 
 <head>
     <meta charset="utf-8">
-    <title>FsBlog</title>
+    <title>@Title</title>
     <meta name="author" content="Gaston Cababie">
 
 
-    <meta name="description" content="A blog aware static site generator in mostly F#">
+    <meta name="description" content="@Description">
 
 
     <!-- http://t.co/dKP3o1e -->
@@ -22,17 +26,17 @@
     <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
     <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:300,400,400italic,600,700,800' rel='stylesheet' type='text/css'>
-    <link href="http://nelak.com.ar//stylesheets/styles.css" rel="stylesheet">
-    <link href="http://nelak.com.ar//stylesheets/pygment_trac.css" rel="stylesheet">
-    <link href="http://nelak.com.ar//favicon.png" rel="shortcut icon">
-    <link href="http://nelak.com.ar//stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-    <link href="http://nelak.com.ar//stylesheets/code.css" rel="stylesheet" type="text/css">
+    <link href="@Model.Root/stylesheets/styles.css" rel="stylesheet">
+    <link href="@Model.Root/stylesheets/pygment_trac.css" rel="stylesheet">
+    <link href="@Model.Root/favicon.png" rel="shortcut icon">
+    <link href="@Model.Root/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <link href="@Model.Root/stylesheets/code.css" rel="stylesheet" type="text/css">
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-    <script src="http://nelak.com.ar//javascripts/slash.js" async></script>
+    <script src="@Model.Root/javascripts/slash.js" async></script>
 
     <!-- FSharp.Formatting Styles -->
-    <link rel="stylesheet" type="text/css" media="screen" href="http://nelak.com.ar//fsharp.formatting/tooltips.css" />
-    <script type="text/javascript" src="http://nelak.com.ar//fsharp.formatting/tooltips.js"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="@Model.Root/fsharp.formatting/tooltips.css" />
+    <script type="text/javascript" src="@Model.Root/fsharp.formatting/tooltips.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
     <script>
@@ -69,8 +73,8 @@
                     </hgroup>
                     <nav id="main-nav">
                         <ul class="main-navigation">
-                            <li><a href="http://nelak.com.ar//about/">about</a></li>
-                            <li><a href="http://nelak.com.ar//blog/">archives</a></li>
+                            <li><a href="@Model.Root/about/">about</a></li>
+                            <li><a href="@Model.Root/blog/">archives</a></li>
                             <li><a href="https://github.com/nelak/nelak.com.ar/issues/new">contact</a></li>
                         </ul>
 
@@ -97,69 +101,9 @@
             <div class="mid-col-container">
                 <!-- From Here -->
                 <div id="content" class="inner">
-                    
+                    @RenderBody()
 
-                        <article class="post" itemscope="" itemtype="http://schema.org/BlogPosting">
-                            <h1 class="title" itemprop="name">
-				<a itemprop="url" href="http://nelak.com.ar//blog/2013/11-09-getting-started/">
-					Getting Started
-				</a>
-			    </h1>
-                            <div class="meta">
-                                <span class="date">
-
-
-
-                                        <time datetime="2013-11-09T12:38:14" itemprop="datePublished">Nov 9, 2013</time>
-
-                                </span>
-                                <span class="tags"></span>
-
-
-
-
-                                <span class="comments"><a href="http://nelak.com.ar//blog/2013/11-09-getting-started/#disqus_thread">comments</a></span>
-
-                            </div>
-                            <div class="entry-content" itemprop="articleBody">
-                                <p>If you've much experience with other static site generators like <em>Octopress</em> or <em>Jekyll</em> most of this should be fairly familiar, if not, hopefully it won't be too difficult to pick up.</p>
-
-
-
-                            </div>
-                        </article>
-                        <article class="post" itemscope="" itemtype="http://schema.org/BlogPosting">
-                            <h1 class="title" itemprop="name">
-				<a itemprop="url" href="http://nelak.com.ar//blog/2013/11-08-hello-fsblog/">
-					Hello, FsBlog!
-				</a>
-			    </h1>
-                            <div class="meta">
-                                <span class="date">
-
-
-
-                                        <time datetime="2013-11-08T11:27:31" itemprop="datePublished">Nov 8, 2013</time>
-
-                                </span>
-                                <span class="tags"></span>
-
-
-
-
-                                <span class="comments"><a href="http://nelak.com.ar//blog/2013/11-08-hello-fsblog/#disqus_thread">comments</a></span>
-
-                            </div>
-                            <div class="entry-content" itemprop="articleBody">
-                                <p><strong>FsBlog</strong> aims to be a blog-aware static site generator, mostly built in <code>F#</code> for .NET and Mono developers.</p>
-
-
-
-                            </div>
-                        </article>
-
-
-                    
+                    @RenderSection("Comments", false)
 
                 </div>
             </div>

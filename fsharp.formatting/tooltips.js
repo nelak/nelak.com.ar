@@ -40,7 +40,7 @@ function showTip(evt, name, unique, owner) {
     var el = document.getElementById(name);
     var parent = (document.documentElement == null) ? document.body : document.documentElement;
     el.style.position = "absolute";
-    el.style.left = posx + "px";
+    el.style.left = posx - 540 + "px";
     el.style.top = posy + "px";
     el.style.display = "block";
 }
