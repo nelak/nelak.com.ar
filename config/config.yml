@@ -17,3 +17,4 @@ content: content
 template: tools/empty-template.html
 output: output/
 deploy: deploy
+themes: themes

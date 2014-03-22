@@ -1,0 +1,32 @@
+@{
+    Layout = "default";
+}
+@helper PostDate(DateTime rawDate)
+{
+    <time datetime="@rawDate.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss")" itemprop="datePublished">@rawDate.ToString("MMM d, yyyy")</time>
+}
+
+@section Comments 
+{
+    <section id="comment">
+        <h1 class="title">Comments</h1>
+        <div id="disqus_thread" aria-live="polite">
+            <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        </div>
+    </section>
+}
+
+<article class="post" itemscope="" itemtype="http://schema.org/BlogPosting">
+    <h1 class="title" itemprop="name">@Title</h1>
+    <div class="meta">
+    <span class="date">
+        @PostDate(DateTime.Parse(@Date))
+    </span>
+    <span class="tags">code</span>
+
+    <span class="comments"><a href="#disqus_thread">comments</a></span>
+    </div>
+    <div class="entry-content" itemprop="articleBody">
+        @RenderBody()
+    </div>
+</article>
