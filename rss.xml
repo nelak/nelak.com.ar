@@ -5,22 +5,11 @@
     <description>Nelak's Blog
 </description>
     <item>
-      <title>Getting Started</title>
-      <guid>http://nelak.com.ar//blog/2013/11-09-getting-started</guid>
-      <link>http://nelak.com.ar//blog/2013/11-09-getting-started/index.html</link>
-      <pubDate>Sat, 09 Nov 2013 15:38:14 GMT</pubDate>
-      <description>&lt;p&gt;If you've much experience with other static site generators like &lt;em&gt;Octopress&lt;/em&gt; or &lt;em&gt;Jekyll&lt;/em&gt; most of this should be fairly familiar, if not, hopefully it won't be too difficult to pick up.&lt;/p&gt;
-
-
-</description>
-    </item>
-    <item>
-      <title>Hello, FsBlog!</title>
-      <guid>http://nelak.com.ar//blog/2013/11-08-hello-fsblog</guid>
-      <link>http://nelak.com.ar//blog/2013/11-08-hello-fsblog/index.html</link>
-      <pubDate>Fri, 08 Nov 2013 14:27:31 GMT</pubDate>
-      <description>&lt;p&gt;&lt;strong&gt;FsBlog&lt;/strong&gt; aims to be a blog-aware static site generator, mostly built in &lt;code&gt;F#&lt;/code&gt; for .NET and Mono developers.&lt;/p&gt;
-
+      <title>How to deal with implicit casting in F#</title>
+      <guid>http://nelak.com.ar//blog/2014/03-24-how-to-deal-with-implicit-casting-in-f</guid>
+      <link>http://nelak.com.ar//blog/2014/03-24-how-to-deal-with-implicit-casting-in-f/index.html</link>
+      <pubDate>Mon, 24 Mar 2014 09:57:44 GMT</pubDate>
+      <description>
 
 </description>
     </item>

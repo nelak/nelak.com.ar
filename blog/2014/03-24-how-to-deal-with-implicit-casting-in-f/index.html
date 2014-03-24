@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>How to deal with implicit casting in F#</title>
+    <meta name="author" content="Gaston Cababie">
+
+
+    <meta name="description" content="How to deal with implicit casting in F#">
+
+
+    <!-- http://t.co/dKP3o1e -->
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="http://feeds.feedburner.com/nelak" rel="alternate" title="Gaston Cababie" type="application/atom+xml">
+
+    <!-- <link rel="canonical" href="Model.UrlFriendly">-->
+    <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+    <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300,400,400italic,600,700,800' rel='stylesheet' type='text/css'>
+    <link href="http://nelak.com.ar//stylesheets/styles.css" rel="stylesheet">
+    <link href="http://nelak.com.ar//stylesheets/pygment_trac.css" rel="stylesheet">
+    <link href="http://nelak.com.ar//favicon.png" rel="shortcut icon">
+    <link href="http://nelak.com.ar//stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+    <link href="http://nelak.com.ar//stylesheets/code.css" rel="stylesheet" type="text/css">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script src="http://nelak.com.ar//javascripts/slash.js" async></script>
+
+    <!-- FSharp.Formatting Styles -->
+    <link rel="stylesheet" type="text/css" media="screen" href="http://nelak.com.ar//fsharp.formatting/tooltips.css" />
+    <script type="text/javascript" src="http://nelak.com.ar//fsharp.formatting/tooltips.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-2934421-9', 'nelak.com.ar');
+        ga('send', 'pageview');
+    </script>
+
+
+</head>
+
+
+<body>
+    <div class="container">
+        <div class="left-col">
+            <div class="intrude-less">
+                <header id="header" class="inner">
+                    <div class="profilepic">
+
+                        <img src="http://www.gravatar.com/avatar/409ffad0dc330529d5d039791ea1d7e2?s=128?s=160" alt="Profile Picture" style="width: 160px;" />
+
+                    </div>
+                    <hgroup>
+                        <h1><a href="/">Gaston Cababie</a></h1>
+
+                        <h2>Todo Complete</h2>
+
+                    </hgroup>
+                    <nav id="main-nav">
+                        <ul class="main-navigation">
+                            <li><a href="http://nelak.com.ar//about/">about</a></li>
+                            <li><a href="http://nelak.com.ar//blog/">archives</a></li>
+                            <li><a href="https://github.com/nelak/nelak.com.ar/issues/new">contact</a></li>
+                        </ul>
+
+
+                    </nav>
+                    <nav id="sub-nav">
+                        <div class="social">
+
+
+                            <a class="twitter" href="http://twitter.com/nelakx" title="Twitter">Twitter</a>
+
+
+                            <a class="github" href="https://github.com/nelak" title="GitHub">GitHub</a>
+
+
+                            <a class="rss" href="http://feeds.feedburner.com/nelak" title="RSS">RSS</a>
+
+                        </div>
+                    </nav>
+                </header>
+            </div>
+        </div>
+        <div class="mid-col">
+            <div class="mid-col-container">
+                <!-- From Here -->
+                <div id="content" class="inner">
+                    
+
+
+<article class="post" itemscope="" itemtype="http://schema.org/BlogPosting">
+    <h1 class="title" itemprop="name">How to deal with implicit casting in F#</h1>
+    <div class="meta">
+    <span class="date">
+            <time datetime="2014-03-24T06:57:44" itemprop="datePublished">Mar 24, 2014</time>
+
+    </span>
+    <span class="tags">code</span>
+
+    <span class="comments"><a href="#disqus_thread">comments</a></span>
+    </div>
+    <div class="entry-content" itemprop="articleBody">
+        
+<h2>How we deal with implicit casting today</h2>
+
+<p>So far all the solutions I've seen that try to deal with implicit casting <code>static op_Implicit</code>
+propose solving it in the following way:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span class="k">inline</span> (<span class="o">!&gt;</span>) (<span class="i">x</span><span class="o">:</span><span class="o">^</span><span class="i">a</span>) <span class="o">:</span> <span class="o">^</span><span class="i">b</span> <span class="o">=</span> ((<span class="o">^</span><span class="i">a</span> <span class="k">or</span> <span class="o">^</span><span class="i">b</span>) <span class="o">:</span> (<span class="k">static</span> <span class="k">member</span> <span class="i">op_Implicit</span> <span class="o">:</span> <span class="o">^</span><span class="i">a</span> <span class="k">-&gt;</span> <span class="o">^</span><span class="i">b</span>) <span class="i">x</span>) </pre>
+</td>
+</tr>
+</table>
+
+<h5>Sources:</h5>
+
+<h6><a href="http://stackoverflow.com/questions/1686895/is-there-an-equivalent-to-creating-a-c-sharp-implicit-operator-in-f">Is there an equivalent to creating a C# implicit operator in F#?</a></h6>
+
+<h6><a href="http://stackoverflow.com/questions/10719770/is-there-anyway-to-use-c-sharp-implicit-operators-from-f">Is there anyway to use C# implicit operators from F#?</a></h6>
+
+<!--more-->
+
+<h2>Implicit casting using inline operator</h2>
+
+<p>Although this this solutions works it still implies that some kind of explicit casting take place in the form of:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">let</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">casted</span> <span class="o">=</span> <span class="o">|&gt;</span> <span class="i">castMe</span></pre>
+</td>
+</tr>
+</table>
+
+<p>I was surprised not being able to find any other kind of solution like:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+[&lt;<span class="i">AllowImplicit</span>&gt;]
+<span class="k">let</span> <span class="i">casted</span> <span class="o">=</span> <span class="i">castMe</span></pre>
+</td>
+</tr>
+</table>
+
+<p>or something more idiomatic to F# like this:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">implicit</span> 
+{
+	<span class="k">let!</span> <span class="i">implicitConversion</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">Point</span>(<span class="n">1</span>,<span class="n">1</span>)
+        <span class="k">return</span> <span class="i">implicitConversion</span>
+}</pre>
+</td>
+</tr>
+</table>
+
+<p>So I decided to try and a write a computation expression builder, and this is what I came up with:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l"> 1: </span>
+<span class="l"> 2: </span>
+<span class="l"> 3: </span>
+<span class="l"> 4: </span>
+<span class="l"> 5: </span>
+<span class="l"> 6: </span>
+<span class="l"> 7: </span>
+<span class="l"> 8: </span>
+<span class="l"> 9: </span>
+<span class="l">10: </span>
+<span class="l">11: </span>
+<span class="l">12: </span>
+<span class="l">13: </span>
+<span class="l">14: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">namespace</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="i">System</span>
+
+[&lt;<span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="i">Sealed</span>&gt;]
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs6', 6)" onmouseover="showTip(event, 'fs6', 6)" class="i">ImplicitBuilder</span>() <span class="o">=</span>
+
+    <span class="k">member</span> <span class="k">inline</span> <span onmouseout="hideTip(event, 'fs7', 7)" onmouseover="showTip(event, 'fs7', 7)" class="i">this</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 8)" onmouseover="showTip(event, 'fs8', 8)" class="i">Bind</span>((<span onmouseout="hideTip(event, 'fs9', 9)" onmouseover="showTip(event, 'fs9', 9)" class="i">x</span><span class="o">:</span><span class="o">&#39;</span><span class="i">T</span>), <span onmouseout="hideTip(event, 'fs10', 10)" onmouseover="showTip(event, 'fs10', 10)" class="i">rest</span><span class="o">:</span> <span class="o">&#39;</span><span class="i">U</span> <span class="k">-&gt;</span> <span class="o">&#39;</span><span class="i">V</span>) <span class="o">:</span> <span class="o">&#39;</span><span class="i">V</span> <span class="o">=</span>
+        <span class="k">let</span> <span class="k">inline</span> (<span class="o">!&gt;</span>) (<span onmouseout="hideTip(event, 'fs11', 11)" onmouseover="showTip(event, 'fs11', 11)" class="i">x</span><span class="o">:</span><span class="o">^</span><span class="i">a</span>) <span class="o">:</span> <span class="o">^</span><span class="i">b</span> <span class="o">=</span> ((<span class="o">^</span><span class="i">a</span> <span class="k">or</span> <span class="o">^</span><span class="i">b</span>) <span class="o">:</span> (<span class="k">static</span> <span class="k">member</span> <span class="i">op_Implicit</span> <span class="o">:</span> <span class="o">^</span><span class="i">a</span> <span class="k">-&gt;</span> <span class="o">^</span><span class="i">b</span>) <span onmouseout="hideTip(event, 'fs11', 12)" onmouseover="showTip(event, 'fs11', 12)" class="i">x</span>)
+        <span class="o">!&gt;</span> <span onmouseout="hideTip(event, 'fs9', 13)" onmouseover="showTip(event, 'fs9', 13)" class="i">x</span> <span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs10', 14)" onmouseover="showTip(event, 'fs10', 14)" class="i">rest</span>
+
+    <span class="k">member</span> <span onmouseout="hideTip(event, 'fs7', 15)" onmouseover="showTip(event, 'fs7', 15)" class="i">this</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs12', 16)" onmouseover="showTip(event, 'fs12', 16)" class="i">Return</span>(<span onmouseout="hideTip(event, 'fs13', 17)" onmouseover="showTip(event, 'fs13', 17)" class="i">x</span><span class="o">:</span><span class="o">&#39;</span><span class="i">T</span>) <span class="o">=</span> <span onmouseout="hideTip(event, 'fs13', 18)" onmouseover="showTip(event, 'fs13', 18)" class="i">x</span>
+
+[&lt;<span onmouseout="hideTip(event, 'fs14', 19)" onmouseover="showTip(event, 'fs14', 19)" class="i">AutoOpen</span>&gt;]
+<span class="k">module</span> <span class="i">ImplicitBuilderImpl</span> <span class="o">=</span>
+    <span class="k">let</span> <span onmouseout="hideTip(event, 'fs2', 20)" onmouseover="showTip(event, 'fs2', 20)" class="i">implicit</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs6', 21)" onmouseover="showTip(event, 'fs6', 21)" class="i">ImplicitBuilder</span>()</pre>
+</td>
+</tr>
+</table>
+
+<h2>Using the implicit builder</h2>
+
+<p>This implemenation now allows us to opt-in for implicit casting through the <code>implicit</code> keyword
+without sacrifing type safety, type inference or having to deal with the explicit casts anymore</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+<span class="l">7: </span>
+<span class="l">8: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">open</span> <span onmouseout="hideTip(event, 'fs4', 22)" onmouseover="showTip(event, 'fs4', 22)" class="i">System</span>
+<span class="k">open</span> <span onmouseout="hideTip(event, 'fs4', 23)" onmouseover="showTip(event, 'fs4', 23)" class="i">System</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs15', 24)" onmouseover="showTip(event, 'fs15', 24)" class="i">Drawing</span>
+
+<span class="k">let</span> <span class="i">pointF</span> <span class="o">=</span>
+        <span onmouseout="hideTip(event, 'fs2', 25)" onmouseover="showTip(event, 'fs2', 25)" class="i">implicit</span> {
+            <span class="k">let!</span> <span class="i">implicitConversion</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs3', 26)" onmouseover="showTip(event, 'fs3', 26)" class="i">Point</span>(<span class="n">1</span>,<span class="n">1</span>)
+            <span class="k">return</span> <span class="i">implicitConversion</span>
+        }</pre>
+</td>
+</tr>
+</table>
+
+<h2>Code and nuget</h2>
+
+<p><a href="https://github.com/nelak/FSharp.Implicit">https://github.com/nelak/FSharp.Implicit</a></p>
+
+<p><a href="https://www.nuget.org/packages/FSharp.Implicit/">https://www.nuget.org/packages/FSharp.Implicit/</a></p>
+
+<div class="tip" id="fs1">val casted : &#39;a<br /><br />Full name: howtodealwithimplicitcastinginf.casted</div>
+<div class="tip" id="fs2">val implicit : ImplicitBuilder<br /><br />Full name: System.ImplicitBuilderImpl.implicit</div>
+<div class="tip" id="fs3">Multiple items<br />type Point =<br />&#160;&#160;struct<br />&#160;&#160;&#160;&#160;new : sz:Size -&gt; Point + 2 overloads<br />&#160;&#160;&#160;&#160;member Equals : obj:obj -&gt; bool<br />&#160;&#160;&#160;&#160;member GetHashCode : unit -&gt; int<br />&#160;&#160;&#160;&#160;member IsEmpty : bool<br />&#160;&#160;&#160;&#160;member Offset : p:Point -&gt; unit + 1 overload<br />&#160;&#160;&#160;&#160;member ToString : unit -&gt; string<br />&#160;&#160;&#160;&#160;member X : int with get, set<br />&#160;&#160;&#160;&#160;member Y : int with get, set<br />&#160;&#160;&#160;&#160;static val Empty : Point<br />&#160;&#160;&#160;&#160;static member Add : pt:Point * sz:Size -&gt; Point<br />&#160;&#160;&#160;&#160;...<br />&#160;&#160;end<br /><br />Full name: System.Drawing.Point<br /><br />--------------------<br />Point()<br />Point(sz: Size) : unit<br />Point(dw: int) : unit<br />Point(x: int, y: int) : unit</div>
+<div class="tip" id="fs4">namespace System</div>
+<div class="tip" id="fs5">Multiple items<br />type SealedAttribute =<br />&#160;&#160;inherit Attribute<br />&#160;&#160;new : unit -&gt; SealedAttribute<br />&#160;&#160;new : value:bool -&gt; SealedAttribute<br />&#160;&#160;member Value : bool<br /><br />Full name: Microsoft.FSharp.Core.SealedAttribute<br /><br />--------------------<br />new : unit -&gt; SealedAttribute<br />new : value:bool -&gt; SealedAttribute</div>
+<div class="tip" id="fs6">Multiple items<br />type ImplicitBuilder =<br />&#160;&#160;new : unit -&gt; ImplicitBuilder<br />&#160;&#160;member Bind : x:&#39;T * rest:(&#39;U -&gt; &#39;V) -&gt; &#39;V (requires member op_Implicit)<br />&#160;&#160;member Return : x:&#39;T -&gt; &#39;T<br /><br />Full name: System.ImplicitBuilder<br /><br />--------------------<br />new : unit -&gt; ImplicitBuilder</div>
+<div class="tip" id="fs7">val this : ImplicitBuilder</div>
+<div class="tip" id="fs8">member ImplicitBuilder.Bind : x:&#39;T * rest:(&#39;U -&gt; &#39;V) -&gt; &#39;V (requires member op_Implicit)<br /><br />Full name: System.ImplicitBuilder.Bind</div>
+<div class="tip" id="fs9">val x : &#39;T (requires member op_Implicit)</div>
+<div class="tip" id="fs10">val rest : (&#39;U -&gt; &#39;V) (requires member op_Implicit)</div>
+<div class="tip" id="fs11">val x : &#39;a (requires member op_Implicit)</div>
+<div class="tip" id="fs12">member ImplicitBuilder.Return : x:&#39;T -&gt; &#39;T<br /><br />Full name: System.ImplicitBuilder.Return</div>
+<div class="tip" id="fs13">val x : &#39;T</div>
+<div class="tip" id="fs14">Multiple items<br />type AutoOpenAttribute =<br />&#160;&#160;inherit Attribute<br />&#160;&#160;new : unit -&gt; AutoOpenAttribute<br />&#160;&#160;new : path:string -&gt; AutoOpenAttribute<br />&#160;&#160;member Path : string<br /><br />Full name: Microsoft.FSharp.Core.AutoOpenAttribute<br /><br />--------------------<br />new : unit -&gt; AutoOpenAttribute<br />new : path:string -&gt; AutoOpenAttribute</div>
+<div class="tip" id="fs15">namespace System.Drawing</div>
+
+    </div>
+</article>
+
+                    
+    <section id="comment">
+        <h1 class="title">Comments</h1>
+        <div id="disqus_thread" aria-live="polite">
+            <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        </div>
+    </section>
+
+
+                </div>
+            </div>
+            <!-- To Here -->
+            <footer id="footer" class="inner">
+                <p>
+                    Copyright &copy; 2014 -  Blog content licensed under the Creative Commons <a href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>
+                </p>
+                <img id="feedburner-count" src="http://feedproxy.google.com/~fc/nelak?bg=FFFFFF&amp;fg=999999&amp;anim=0" alt="Reader count" />
+
+
+
+                <script type="text/javascript">
+                    var disqus_shortname = 'nelak';
+
+                    (function () {
+                        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                    })();
+                </script>
+
+                <script type="text/javascript">
+                    (function () {
+                        var twitterWidgets = document.createElement('script');
+                        twitterWidgets.type = 'text/javascript';
+                        twitterWidgets.async = true;
+                        twitterWidgets.src = '//platform.twitter.com/widgets.js';
+                        document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+                    })();
+                </script>
+
+
+            </footer>
+        </div>
+    </div>
+</body>
+</html>
